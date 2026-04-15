@@ -31,7 +31,8 @@ var startCmd = &cobra.Command{
 		if len(args) == 1 {
 			model = args[0]
 		} else {
-			picked, err := tui.PickModel()
+			installed, _ := ollama.List() // best-effort: empty slice on error
+			picked, err := tui.PickModel(installed)
 			if err != nil {
 				return err
 			}
