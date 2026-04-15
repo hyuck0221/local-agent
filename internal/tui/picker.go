@@ -1,53 +1,101 @@
 package tui
 
-import "github.com/charmbracelet/huh"
+import (
+	"fmt"
 
-// Recommended is a curated list of Ollama models surfaced in the picker.
-// Tool-calling-capable models are preferred because opencode's agent loop
-// requires them; the few entries that do NOT support tools are explicitly
-// labelled "chat only" so users know they will not work with opencode's
-// editing features.
-var Recommended = []Model{
-	{Tag: "qwen2.5-coder:7b", Label: "Qwen2.5 Coder 7B — best small coder, ~5GB (default pick)"},
-	{Tag: "qwen2.5-coder:14b", Label: "Qwen2.5 Coder 14B — higher quality, ~9GB, 16GB+ RAM"},
-	{Tag: "qwen3:8b", Label: "Qwen 3 8B — modern general-purpose, ~5GB"},
-	{Tag: "llama3.1:8b", Label: "Llama 3.1 8B — Meta baseline with strong tools, ~5GB"},
-	{Tag: "llama3.3:70b", Label: "Llama 3.3 70B — top quality, ~40GB, workstation only"},
-	{Tag: "mistral-nemo:12b", Label: "Mistral Nemo 12B — fast with solid tool calling, ~7GB"},
-	{Tag: "deepseek-coder-v2:16b", Label: "DeepSeek Coder V2 16B — powerful MoE coder, ~9GB"},
-	{Tag: "command-r:35b", Label: "Command R 35B — RAG/tools specialist, ~20GB"},
-	{Tag: "gemma4:e4b", Label: "Gemma 4 E4B — multilingual, chat only (no tool calling)"},
-	{Tag: "gemma4:e2b", Label: "Gemma 4 E2B — small multilingual, chat only (no tool calling)"},
-}
+	"github.com/charmbracelet/huh"
+)
 
 type Model struct {
 	Tag   string
-	Label string
+	Label string // short description, no tag prefix
 }
 
-// PickModel renders an interactive select prompt listing locally installed
-// models first (tagged "[installed]") followed by curated recommendations.
-// Returns "" if the user cancels.
-func PickModel(installed []string) (string, error) {
-	var choice string
-	opts := make([]huh.Option[string], 0, len(installed)+len(Recommended))
+// Recommended is a curated list of Ollama models surfaced in the picker.
+// Every entry advertises the `tools` capability in `ollama show`, which is
+// what opencode's agent loop needs. Gemma 3 / DeepSeek-R1 / Phi3 are
+// intentionally excluded because they cannot emit structured tool calls.
+//
+// Gemma 4 *does* advertise tool support but in practice hallucinates tools
+// outside the provided schema (e.g. `google:search`). It stays in the list
+// for multimodal use cases but is labelled accordingly.
+var Recommended = []Model{
+	{Tag: "qwen2.5-coder:7b", Label: "best small coder, ~5GB (default)"},
+	{Tag: "qwen2.5-coder:14b", Label: "higher quality coder, ~9GB, 16GB+ RAM"},
+	{Tag: "qwen3:8b", Label: "modern general-purpose, ~5GB"},
+	{Tag: "llama3.1:8b", Label: "Meta baseline with strong tools, ~5GB"},
+	{Tag: "llama3.3:70b", Label: "top quality, ~40GB, workstation only"},
+	{Tag: "mistral-nemo:12b", Label: "fast with solid tool calling, ~7GB"},
+	{Tag: "deepseek-coder-v2:16b", Label: "powerful MoE coder, ~9GB"},
+	{Tag: "command-r:35b", Label: "RAG/tools specialist, ~20GB"},
+	{Tag: "gemma4:e4b", Label: "multimodal, ~8B — tools unstable in opencode"},
+	{Tag: "gemma4:e2b", Label: "small multimodal, ~5B — tools unstable in opencode"},
+}
 
-	seen := make(map[string]bool, len(installed))
-	for _, tag := range installed {
-		opts = append(opts, huh.NewOption("[installed] "+tag, tag))
-		seen[tag] = true
+// PickModel renders a unified select prompt where each row shows whether
+// the model is already installed locally. Order: recommended-installed,
+// recommended-not-installed, then any locally installed models that are not
+// in the recommended list.
+func PickModel(installed []string) (string, error) {
+	instSet := make(map[string]bool, len(installed))
+	for _, t := range installed {
+		instSet[t] = true
+	}
+	recSet := make(map[string]bool, len(Recommended))
+	for _, m := range Recommended {
+		recSet[m.Tag] = true
+	}
+
+	var recInstalled, recMissing []Model
+	for _, m := range Recommended {
+		if instSet[m.Tag] {
+			recInstalled = append(recInstalled, m)
+		} else {
+			recMissing = append(recMissing, m)
+		}
+	}
+	var extra []string
+	for _, t := range installed {
+		if !recSet[t] {
+			extra = append(extra, t)
+		}
+	}
+
+	// Column width for the tag, so labels align.
+	tagWidth := 0
+	widen := func(s string) {
+		if len(s) > tagWidth {
+			tagWidth = len(s)
+		}
 	}
 	for _, m := range Recommended {
-		if seen[m.Tag] {
-			continue
-		}
-		opts = append(opts, huh.NewOption(m.Label, m.Tag))
+		widen(m.Tag)
+	}
+	for _, t := range extra {
+		widen(t)
 	}
 
+	row := func(mark, tag, label string) string {
+		return fmt.Sprintf("%s  %-*s  %s", mark, tagWidth, tag, label)
+	}
+
+	opts := make([]huh.Option[string], 0, len(Recommended)+len(extra))
+	for _, m := range recInstalled {
+		opts = append(opts, huh.NewOption(row("●", m.Tag, m.Label), m.Tag))
+	}
+	for _, m := range recMissing {
+		opts = append(opts, huh.NewOption(row("○", m.Tag, m.Label), m.Tag))
+	}
+	for _, t := range extra {
+		opts = append(opts, huh.NewOption(row("●", t, "locally installed"), t))
+	}
+
+	var choice string
 	err := huh.NewSelect[string]().
 		Title("Pick a model to run locally").
-		Description("Installed models appear first. Recommended picks support tool calling; entries marked 'chat only' will not work with opencode's agent loop.").
+		Description("●  already installed      ○  will be downloaded      (opencode needs tool-calling)").
 		Options(opts...).
+		Height(min(len(opts)+4, 18)).
 		Value(&choice).
 		Run()
 	if err != nil {
