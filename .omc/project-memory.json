@@ -1,0 +1,161 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1776211440042,
+  "projectRoot": "/Users/shimhyuck/clone2/local-agent",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {},
+  "hotPaths": [
+    {
+      "path": "go.mod",
+      "accessCount": 1,
+      "lastAccessed": 1776212027634,
+      "type": "file"
+    },
+    {
+      "path": "main.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212029121,
+      "type": "file"
+    },
+    {
+      "path": "cmd/root.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212032933,
+      "type": "file"
+    },
+    {
+      "path": "internal/platform/platform.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212037271,
+      "type": "file"
+    },
+    {
+      "path": "internal/ollama/ollama.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212056782,
+      "type": "file"
+    },
+    {
+      "path": "internal/opencode/config.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212069347,
+      "type": "file"
+    },
+    {
+      "path": "internal/opencode/config_test.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212077564,
+      "type": "file"
+    },
+    {
+      "path": "internal/tui/picker.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212084480,
+      "type": "file"
+    },
+    {
+      "path": "cmd/install.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212086804,
+      "type": "file"
+    },
+    {
+      "path": "cmd/start.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212094164,
+      "type": "file"
+    },
+    {
+      "path": "cmd/stop.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212095906,
+      "type": "file"
+    },
+    {
+      "path": "cmd/status.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212099370,
+      "type": "file"
+    },
+    {
+      "path": "cmd/models.go",
+      "accessCount": 1,
+      "lastAccessed": 1776212103268,
+      "type": "file"
+    },
+    {
+      "path": "install.sh",
+      "accessCount": 1,
+      "lastAccessed": 1776212111743,
+      "type": "file"
+    },
+    {
+      "path": "install.ps1",
+      "accessCount": 1,
+      "lastAccessed": 1776212121415,
+      "type": "file"
+    },
+    {
+      "path": "npm/package.json",
+      "accessCount": 1,
+      "lastAccessed": 1776212123726,
+      "type": "file"
+    },
+    {
+      "path": "npm/bin/local-agent.js",
+      "accessCount": 1,
+      "lastAccessed": 1776212126781,
+      "type": "file"
+    },
+    {
+      "path": "npm/scripts/postinstall.js",
+      "accessCount": 1,
+      "lastAccessed": 1776212137946,
+      "type": "file"
+    },
+    {
+      "path": ".goreleaser.yaml",
+      "accessCount": 1,
+      "lastAccessed": 1776212144455,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1776212161442,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1776212573435,
+      "type": "directory"
+    }
+  ],
+  "userDirectives": []
+}

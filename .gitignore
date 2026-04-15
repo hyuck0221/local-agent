@@ -1,0 +1,10 @@
+/local-agent
+/local-agent.exe
+/dist/
+/npm/vendor/
+/npm/node_modules/
+*.test
+*.out
+.DS_Store
+
+.claude

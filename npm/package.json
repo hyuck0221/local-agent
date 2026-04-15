@@ -1,0 +1,24 @@
+{
+  "name": "local-agent",
+  "version": "0.0.0",
+  "description": "Run a local LLM and wire it into opencode with one command.",
+  "bin": {
+    "local-agent": "bin/local-agent.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyuck0221/local-agent.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
