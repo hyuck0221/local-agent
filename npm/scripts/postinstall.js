@@ -10,8 +10,9 @@ const zlib = require('node:zlib');
 const tar = require('node:child_process');
 
 const pkg = require('../package.json');
-const REPO = process.env.LOCAL_AGENT_REPO || 'local-agent/local-agent';
+const REPO = process.env.LOCAL_AGENT_REPO || 'hyuck0221/local-agent';
 const VERSION = process.env.LOCAL_AGENT_VERSION || `v${pkg.version}`;
+const DOWNLOAD_BASE = process.env.LOCAL_AGENT_DOWNLOAD_BASE || '';
 
 const platMap = { darwin: 'darwin', linux: 'linux', win32: 'windows' };
 const archMap = { x64: 'amd64', arm64: 'arm64' };
@@ -26,7 +27,9 @@ if (!os || !arch) {
 const stripped = VERSION.replace(/^v/, '');
 const ext = os === 'windows' ? 'zip' : 'tar.gz';
 const asset = `local-agent_${stripped}_${os}_${arch}.${ext}`;
-const url = `https://github.com/${REPO}/releases/download/${VERSION}/${asset}`;
+const url = DOWNLOAD_BASE
+  ? `${DOWNLOAD_BASE}/${asset}`
+  : `https://github.com/${REPO}/releases/download/${VERSION}/${asset}`;
 
 const vendorDir = path.join(__dirname, '..', 'vendor');
 mkdirSync(vendorDir, { recursive: true });

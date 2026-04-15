@@ -3,8 +3,10 @@
 # drops it into %LOCALAPPDATA%\Programs\local-agent, adding it to the user PATH.
 $ErrorActionPreference = 'Stop'
 
-$Repo    = if ($env:LOCAL_AGENT_REPO)    { $env:LOCAL_AGENT_REPO }    else { 'hyuck0221/local-agent' }
-$Version = if ($env:LOCAL_AGENT_VERSION) { $env:LOCAL_AGENT_VERSION } else { 'latest' }
+$Repo         = if ($env:LOCAL_AGENT_REPO)          { $env:LOCAL_AGENT_REPO }          else { 'hyuck0221/local-agent' }
+$Version      = if ($env:LOCAL_AGENT_VERSION)       { $env:LOCAL_AGENT_VERSION }       else { 'latest' }
+$DownloadBase = if ($env:LOCAL_AGENT_DOWNLOAD_BASE) { $env:LOCAL_AGENT_DOWNLOAD_BASE } else { '' }
+$Prefix       = if ($env:LOCAL_AGENT_PREFIX)        { $env:LOCAL_AGENT_PREFIX }        else { '' }
 
 $arch = if ([Environment]::Is64BitOperatingSystem) {
   if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'amd64' }
@@ -17,7 +19,11 @@ if ($Version -eq 'latest') {
 
 $stripped = $Version -replace '^v', ''
 $asset = "local-agent_${stripped}_windows_${arch}.zip"
-$url   = "https://github.com/$Repo/releases/download/$Version/$asset"
+if ($DownloadBase) {
+  $url = "$DownloadBase/$asset"
+} else {
+  $url = "https://github.com/$Repo/releases/download/$Version/$asset"
+}
 
 $tmp = Join-Path $env:TEMP "local-agent-$([guid]::NewGuid())"
 New-Item -ItemType Directory -Path $tmp | Out-Null
@@ -27,7 +33,7 @@ try {
   Invoke-WebRequest -Uri $url -OutFile $zipPath
   Expand-Archive -Path $zipPath -DestinationPath $tmp -Force
 
-  $dest = Join-Path $env:LOCALAPPDATA 'Programs\local-agent'
+  $dest = if ($Prefix) { $Prefix } else { Join-Path $env:LOCALAPPDATA 'Programs\local-agent' }
   New-Item -ItemType Directory -Force -Path $dest | Out-Null
   Copy-Item (Join-Path $tmp 'local-agent.exe') (Join-Path $dest 'local-agent.exe') -Force
 

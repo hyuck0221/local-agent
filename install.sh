@@ -5,6 +5,11 @@ set -eu
 
 REPO="${LOCAL_AGENT_REPO:-hyuck0221/local-agent}"
 VERSION="${LOCAL_AGENT_VERSION:-latest}"
+# Override to point at a private mirror or a local test server.
+# Must be the prefix that precedes the archive filename.
+DOWNLOAD_BASE="${LOCAL_AGENT_DOWNLOAD_BASE:-}"
+# Override install destination (default: /usr/local/bin or ~/.local/bin).
+PREFIX="${LOCAL_AGENT_PREFIX:-}"
 
 os="$(uname -s | tr '[:upper:]' '[:lower:]')"
 arch="$(uname -m)"
@@ -26,7 +31,11 @@ fi
 [ -n "$VERSION" ] || { echo "could not resolve latest version" >&2; exit 1; }
 
 asset="local-agent_${VERSION#v}_${os}_${arch}.tar.gz"
-url="https://github.com/$REPO/releases/download/$VERSION/$asset"
+if [ -n "$DOWNLOAD_BASE" ]; then
+  url="$DOWNLOAD_BASE/$asset"
+else
+  url="https://github.com/$REPO/releases/download/$VERSION/$asset"
+fi
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
@@ -35,10 +44,15 @@ echo "Downloading $asset..."
 curl -fsSL "$url" -o "$tmp/a.tar.gz"
 tar -xzf "$tmp/a.tar.gz" -C "$tmp"
 
-dest="/usr/local/bin"
-if [ ! -w "$dest" ]; then
-  dest="$HOME/.local/bin"
+if [ -n "$PREFIX" ]; then
+  dest="$PREFIX"
   mkdir -p "$dest"
+else
+  dest="/usr/local/bin"
+  if [ ! -w "$dest" ]; then
+    dest="$HOME/.local/bin"
+    mkdir -p "$dest"
+  fi
 fi
 
 install -m 0755 "$tmp/local-agent" "$dest/local-agent"

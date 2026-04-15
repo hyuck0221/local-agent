@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"ls -la ~/.config/opencode/ 2>/dev/null; echo \\\"---\\\"; cat ~/.config/opencode/opencode.json 2>/dev/null | head -50; echo \\\"---\\\"; git status --short && git log --oneline -5 2>&1\",\"descripti...",
-  "error": "Exit code 128\ntotal 24\ndrwxr-xr-x@  6 shimhyuck  staff   192 Apr 15 09:01 .\ndrwx------  10 shimhyuck  staff   320 Apr 15 09:01 ..\n-rw-r--r--@  1 shimhyuck  staff    63 Apr 15 09:01 .gitignore\ndrwxr-xr-x@ 12 shimhyuck  staff   384 Apr 15 09:01 node_modules\n-rw-r--r--@  1 shimhyuck  staff  3857 Apr 15 09:01 package-lock.json\n-rw-r--r--@  1 shimhyuck  staff    62 Apr 15 09:01 package.json\n---\n---\nA  .idea/.gitignore\nA  .idea/misc.xml\nA  .idea/modules.xml\nA  .idea/vcs.xml\nA  local-agent.iml\n?? .clau...",
-  "timestamp": "2026-04-15T00:18:18.892Z",
-  "retry_count": 1
-}

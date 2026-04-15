@@ -33,7 +33,7 @@ checksum:
 
 release:
   github:
-    owner: local-agent
+    owner: hyuck0221
     name: local-agent
   draft: false
   prerelease: auto
